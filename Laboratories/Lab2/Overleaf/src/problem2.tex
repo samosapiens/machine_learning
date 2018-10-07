@@ -1,0 +1,40 @@
+\section{Problem 2}
+Exercise 13.6 from [1]
+
+The function \textbf{ApplyMultinomialNB} in the following figure has time complexity $\Theta( L_{a}+\vert\mathbb{C}\vert L_{a})$. How would you modify the function so that its time complexity is $\Theta( L_{a}+\vert\mathbb{C}\vert M_{a})$? 
+
+\begin{algorithm}[H]
+    \caption{Apply Multinomial NB Algorithm}\label{alg:}
+    \begin{algorithmic}[1]
+        \Procedure{ApplyMultinomialNB}{$C,V,P,cP,d$}
+            \State $W \gets ExtractTokensFromDoc(V,d)$
+            \For{$c \in C$}
+                \State $score[c] \gets log(P[c])$
+                \For{$t \in W$}
+                    \State $score[c] += log(cP[t][c])$
+                \EndFor
+            \EndFor
+            \State \textbf{return} $argmax_{c \in C} score[c]$
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+In order to change the complexity of this algorithm, we see that we are adding multiple times the repeated words to the total score of each class, this means that the algorithm is adding a term to the score for every word in the document. But if instead, we first get the histogram of the document ($W', \omega$) and for every class $c$ we estimate the score of each word $t$ in the subset $W'$ and multiply it by the number of times it appears in the document $\omega$, we get the complexity of the algorithm to depend on the size of the vocabulary included in the document, more than on the numbers of words this document has. This is implemented in the following figure:
+
+\begin{algorithm}[H]
+\caption{Apply Multinomial NB Algorithm Using Histogram}\label{alg:}
+\begin{algorithmic}[1]
+    \Procedure{newApplyMultinomialNB}{$C,V,P,cP,d$}
+        \State $W', \omega \gets ExtractHistogramOfTokensFromDoc(V,d)$
+        \For{$c \in C$}
+            \State $score[c] \gets log(P[c])$
+            \For{$t \in W'$}
+                \State $score[c] += \omega[t] log(cP[t][c])$
+            \EndFor
+        \EndFor
+        \State \textbf{return} $argmax_{c \in C} score[c]$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+This improves the complexity of the algorithm because it makes it be a function of $\Theta( L_{a}+\vert\mathbb{C}\vert M_{a})$ where $M_a$ is the length of the vocabulary, $L_a$ the length of the document and $\vert\mathbb{C}\vert$ the number of classes. This is better when a very long document has to be classified, because many words will be repeated and the length of the document will be bigger than the length of the vocabulary, and in that case it will be better to use the \textbf{newApplyNaiveBayesClassifier}.

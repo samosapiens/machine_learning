@@ -1,0 +1,130 @@
+\section{Problem 1}
+Based on the data in Table 13.10 from [1] (i) estimate a multinomial Naive Bayes classifier, (ii) apply the classifier to the test document, (iii) estimate a Bernoulli NB classifier, (iv) apply the classifier to the test document.
+
+\subsection{Multinomial Naive Bayes Classifier}
+The table 13.10 from [1] gives us the following information:
+
+\begin{table}[H]
+\begin{tabular}{lllll}
+             & docID & words in document & in $c =$ China \\
+training set & 1 & Taipei Taiwan & yes \\
+             & 2 & Macao Taiwan Shanghai & yes \\
+             & 3 & Japan Sapporo & no \\
+             & 4 & Sapporo Osaka Taiwan & no \\
+test set     & 5 & Taiwan Taiwan Sapporo & $?$
+\end{tabular}
+\end{table}
+
+It shows a set of documents that have been previously classified as related to China or not related to China. The purpose of the multinomial Naive Bayes classifier is to find out, from the previous knowledge of the words contained in each class of document, whether a new document belongs to class China or not. What we expect to get at the output of the classifier is the conditional probability of a given document $d$ belongs to the class $c$, or in mathematical language $P(c|d)$.
+
+Applying the Bayes theorem to this problem, in terms of the literal content of the document, we must know the probability of each word in the document ($t_k$) to belong also to a document of a given class, in other words, the probability that a document that contains certain words $t_k$ belongs to the class $c$. This can be computed with the following equation: 
+
+\begin{equation}
+    P(c|d) = P(c)\[ \prod_{n=1} P(t_k|c)\]
+\end{equation}
+
+That way, the class with the maximum score of conditional probability will be the class to which the document belongs.
+
+
+And in order to calculate the values of $P(c)$ and $P(t_k|c)$, we apply the \textit{maximum likelyhood estimate}, or estimate the relative frequencies of each class with respect to all of the possible classes, and from the words of the document with respect to each of the words in the documents of class $c$. In mathematical language:
+
+\begin{equation}
+    P(c) = \frac{N_c}{N}
+\end{equation}
+
+Where $N$ is the number of documents to train the classifier and $N_C$ is the number of documents that are known to belong to the class $c$.
+
+\begin{table}[H]
+\begin{tabular}{ll}
+Class & $P(c)$ \\
+$c$ & $\frac{2}{4} = \frac{1}{2}$ \\
+$\bar{c}$ & $\frac{2}{4} = \frac{1}{2}$
+\end{tabular}
+\end{table}
+
+\begin{equation}
+    P(t|c) = \frac{T_{ct}}{\sum_{t' \in V} T_{ct'}} = \frac{T_{ct} + 1}{(\sum_{t' \in V} T_{ct'}) + B'}
+\end{equation}
+
+Where $T_{ct}$ is the number of times the word $t$ appears in the whole documents of class $c$ and the denominator is the total number of words included in class $c$. A Laplacian filter is applied to avoid singularities that generate errors in the total probability, so we add 1 to all the numerators, in case the word is not in any document of a given class (it would cancel the whole probability), and in the denominator we add the term $B' = |V|$ which is the number of words in the vocabulary in the case there is a class without any number of words. 
+
+\begin{table}[H]
+\begin{tabular}{lllll}
+Vocabulary & $T_{ct}$ &  $T_{\bar{c}t}$ & $P(t_k|c)$  & $P(t_k|\bar{c})$ \\
+Taipei & 1 & 0 & $\frac{1+1}{5+7} = \frac{1}{6}$ & $\frac{0+1}{5+7} = \frac{1}{12}$ \\
+Taiwan & 2 & 1 & $\frac{2+1}{5+7} = \frac{1}{4}$ & $\frac{1+1}{5+7} = \frac{1}{6}$ \\
+Macao & 1 & 0 & $\frac{1+1}{5+7} = \frac{1}{6}$ & $\frac{0+1}{5+7} = \frac{1}{12}$ \\
+Shanghai & 1 & 0 & $\frac{1+1}{5+7} = \frac{1}{6}$ & $\frac{0+1}{5+7} = \frac{1}{12}$ \\
+Japan & 0 & 1 & $\frac{0+1}{5+7} = \frac{1}{12}$ & $\frac{1+1}{5+7} = \frac{1}{6}$ \\
+Sapporo & 0 & 2 & $\frac{0+1}{5+7} = \frac{1}{12}$ & $\frac{2+1}{5+7} = \frac{1}{4}$ \\
+Osaka & 0 & 1 & $\frac{0+1}{5+7} = \frac{1}{12}$ & $\frac{1+1}{5+7} = \frac{1}{6}$ \\
+Totals & 5 & 5
+\end{tabular}
+\end{table}
+
+This resulting matrix contains all the information needed to train the classifier for each word in a document, now we can use this information to estimate the probability of a document to belong to a class given its content.
+
+\subsection{Apply Multinomial Naive Bayes Classifier}
+From equation [1] and table [2] we can estimate the conditional probability of a document to belong to a given class. In this case we have the following content for the document:
+
+\begin{equation}
+    P(c|d) = \frac{1}{2}\frac{1}{4}\frac{1}{4}\frac{1}{12} = \frac{1}{384}
+\end{equation}
+
+\begin{equation}
+    P(\bar{c}|d) = \frac{1}{2}\frac{1}{6}\frac{1}{6}\frac{1}{4} = \frac{1}{288}
+\end{equation}
+
+After applying the classifier, we find out that the document should not belong to the class China.
+
+\subsection{Multivariate Bernoulli Naive Bayes Classifier}
+The multivariate Bernoulli Naive Bayes classifier has a different way to predict if a given document belongs to a certain class. The Bernoulli model generates a binary (Boolean) indicator (vector) for each term of the vocabulary, each component $x_k$ of the vector $\vec{x_d} = (x_1, ..., x_M)$ indicates the presence ("$1$") or absence ("$0$") of the word $x_k$ of the vocabulary $V$ in the document $d$.
+
+\begin{table}[H]
+\begin{tabular}{lllll}
+Vocabulary  & $\vec{x_1}$ &  $\vec{x_2}$ & $\vec{x_3}$  & $\vec{x_4}$ \\
+Taipei      & 1 & 0 & 0 & 0 \\
+Taiwan      & 1 & 1 & 0 & 1 \\
+Macao       & 0 & 1 & 0 & 0 \\
+Shanghai    & 0 & 1 & 0 & 0 \\
+Japan       & 0 & 0 & 1 & 0 \\
+Sapporo     & 0 & 0 & 1 & 1 \\
+Osaka       & 0 & 0 & 0 & 1 
+\end{tabular}
+\end{table}
+
+With each of this vectors, the Bernoulli model to estimate the conditional probability of a document to belong to a certain class is the following:
+
+\begin{equation}
+    P(t_k|c) = \frac{N_{ct}+1}{N_c+2}
+\end{equation}
+
+Where $N_{ct}$ is the number of documents in the class $c$ that contain the word $t$ and $N_c$ the number of documents of class $c$, for this case $N_c = 2$ and $N_{\bar{c}} = 2$.
+
+From the vector form of each document, and the function to estimate the conditional probability by the model of Bernoulli, we get the following table:
+
+\begin{table}[H]
+\begin{tabular}{lllll}
+Vocabulary  & $N_{ct}$ & $N_{\bar{c}t}$ & $P(t_k|c)$ &  $P(t_c|\bar{c})$ \\
+Taipei      & 1 & 0 & $\frac{1+1}{2+2} = \frac{1}{2}$ & $\frac{0+1}{2+2} = \frac{1}{4}$ \\
+Taiwan      & 2 & 1 & $\frac{2+1}{2+2} = \frac{3}{4}$ & $\frac{1+1}{2+2} = \frac{1}{2}$ \\
+Macao       & 1 & 0 & $\frac{1+1}{2+2} = \frac{1}{2}$ & $\frac{0+1}{2+2} = \frac{1}{4}$ \\
+Shanghai    & 1 & 0 & $\frac{1+1}{2+2} = \frac{1}{2}$ & $\frac{0+1}{2+2} = \frac{1}{4}$ \\
+Japan       & 0 & 1 & $\frac{0+1}{2+2} = \frac{1}{4}$ & $\frac{1+1}{2+2} = \frac{1}{2}$ \\
+Sapporo     & 0 & 2 & $\frac{0+1}{2+2} = \frac{1}{4}$ & $\frac{2+1}{2+2} = \frac{3}{4}$ \\
+Osaka       & 0 & 1 & $\frac{0+1}{2+2} = \frac{1}{4}$ & $\frac{1+1}{2+2} = \frac{1}{2}$
+\end{tabular}
+\end{table}
+
+\subsection{Apply Multivariate Bernoulli Naive Bayes Classifier}
+From equation [1] and the previous table we can estimate the conditional probability of a document to belong to a given class:
+
+\begin{equation}
+    P(c|d) = \frac{1}{2}\frac{3}{4}\frac{3}{4}\frac{1}{4} = \frac{9}{128} 
+\end{equation}
+
+\begin{equation}
+    P(\bar{c}|d) = \frac{1}{2}\frac{1}{2}\frac{1}{2}\frac{3}{4} = \frac{3}{32}
+\end{equation}
+
+After applying the classifier, we find out again that the document should not belong to the class China.

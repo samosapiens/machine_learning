@@ -1,0 +1,77 @@
+% Importar librerias
+\documentclass{IEEEtran}
+\usepackage[utf8]{inputenc}%modifica las ñ y las tíldes para no colocar el cod ascii.
+\usepackage[total={18cm,21cm},top=2cm, left=2cm, bottom=3cm]{geometry}
+\usepackage[dvips]{graphicx}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage[spanish, english]{babel}
+\usepackage[x11names,table]{xcolor}
+\usepackage{amsmath,amssymb,amsfonts,latexsym,cancel}%Funciones especiales para matemáticas
+\usepackage{float} % Fijar posicion
+\usepackage[hidelinks]{hyperref}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+% Precompilar PDF
+\lstset{numbers=left, numberstyle=\scriptsize, numbersep=5pt, language=python, frame=single, fontadjust, basicstyle=\scriptsize, frameround=tttt, stepnumber=1, keywordstyle=\color{cyan}, showtabs=false, tab=\rightarrowfill} \renewcommand*\thelstnumber{\oldstylenums{\the\value{lstnumber}}}
+\makeatletter
+\def\contentsname{Indice}
+\def\listfigurename{Lista de Figuras}
+\def\listtablename{Lista de Tablas}
+\def\refname{Referencias}
+\def\indexname{Indice de Términos}
+\def\figurename{Fig.}
+\@IEEEcompsocconfonly{\def\figurename{Figura} \def\tablename{Tabla}}
+\def\partname{Parte}
+\def\appendixname{Apéndice}
+\def\abstractname{Abstract}
+\def\IEEEkeywordsname{Palabras Claves}
+\def\IEEEproofname{Demostración}
+\makeatother
+\ifCLASSOPTIONcompsoc
+\else
+\fi
+\ifCLASSINFOpdf
+\else
+\fi
+\providecommand{\PSforPDF}[1]{#1}
+
+% Metodos
+\newcommand\MYhyperrefoptions{bookmarks=true,bookmarksnumbered=true,
+pdfpagemode={UseOutlines},plainpages=false,pdfpagelabels=true,
+colorlinks=true,linkcolor={black},citecolor={black},pagecolor={black},
+urlcolor={black},
+pdftitle={TC_Taller1},
+pdfsubject={Typesetting},
+pdfauthor={Santiago},
+pdfkeywords={ML, BAYES_CLASSIFIER}}
+
+% Aquí comienza el documento
+\title{
+	Laboratory 2
+}
+\author{
+    Santiago Álvarez Sepúlveda, ~\IEEEmembership{\url{saalvarezse@unal.edu.co}, Cód:~25481031}\\
+    Universidad Nacional de Colombia, Sede Bogotá
+}
+
+\markboth{
+	MAchine Learning, Laboratory II, 24~September~2018
+}{B \MakeLowercase{\textit{et al.}}: IEEE.cls para Journals}
+
+% Aquí comienza el contenido del documento
+\begin{document}
+\maketitle
+
+\IEEEpeerreviewmaketitle
+\IEEEtitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+\input{src/abstract.tex}
+\input{src/problem1.tex}
+\input{src/problem2.tex}
+\input{src/references.tex}
+
+\end{document}
